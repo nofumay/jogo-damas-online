@@ -1,24 +1,23 @@
-FROM maven:3.9-eclipse-temurin-17 AS build
+FROM maven:3.9-eclipse-temurin-17
+
+# Diretório de trabalho
 WORKDIR /app
 
-# Copiar os arquivos de configuração primeiro
-COPY . .
+# Copiar o pom.xml primeiro para aproveitar o cache de dependências
+COPY pom.xml .
 
-# Construir o aplicativo
-RUN mvn clean package -DskipTests
+# Copiar o código-fonte
+COPY src/ src/
+COPY system.properties .
 
-# Segunda etapa: apenas o runtime Java
-FROM eclipse-temurin:17-jre-alpine
-WORKDIR /app
+# Executar o Maven para construir
+RUN ls -la && mvn clean package -DskipTests
 
-# Copiar o JAR gerado da etapa de build
-COPY --from=build /app/target/*.jar app.jar
-
-# Variáveis de ambiente
+# Configurar variáveis de ambiente
 ENV PORT=8080
 
-# Expor a porta da aplicação
+# Expor a porta
 EXPOSE ${PORT}
 
 # Comando para iniciar a aplicação
-CMD ["java", "-jar", "app.jar"]
+CMD ["java", "-jar", "target/*.jar"]
