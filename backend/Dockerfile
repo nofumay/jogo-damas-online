@@ -1,12 +1,6 @@
-FROM maven:3.9-eclipse-temurin-17 AS build
+FROM maven:3.9-eclipse-temurin-17
 WORKDIR /app
-# Copiar todos os arquivos de uma vez
 COPY . .
-RUN mvn clean package -DskipTests
-
-FROM eclipse-temurin:17-jre
-WORKDIR /app
-COPY --from=build /app/target/*.jar app.jar
 EXPOSE 8080
 ENV PORT=8080
-CMD ["java", "-jar", "app.jar"]
+CMD ["sh", "-c", "mvn clean package -DskipTests && java -jar target/*.jar"]
