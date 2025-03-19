@@ -2,9 +2,7 @@ FROM maven:3.9-eclipse-temurin-17 AS build
 WORKDIR /app
 
 # Copiar os arquivos de configuração primeiro
-COPY pom.xml .
-COPY src ./src
-COPY system.properties .
+COPY . .
 
 # Construir o aplicativo
 RUN mvn clean package -DskipTests
